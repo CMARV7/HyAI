@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from django.core.wsgi import get_wsgi_application
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -93,3 +94,21 @@ AWS_SES_REGION_ENDPOINT = 'email.us-east-1.amazonaws.com'
 DEFAULT_FROM_EMAIL = 'Dr. HyAI <chinwendumarvelous7@gmail.com>'
 
 # AWS keys will be added in Railway as environment variables (secure)
+
+
+# Railway database (auto-configured)
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+
+# Static files for production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Celery config for Railway
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
