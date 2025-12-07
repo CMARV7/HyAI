@@ -1,0 +1,24 @@
+hyai_project/
+├── hyai_project/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── core/
+│   ├── models.py          # UserProfile, BPLog, Medication, EmergencyContact
+│   ├── views.py           # All pages
+│   ├── urls.py
+│   ├── forms.py           # Forms for medication, profile
+│   └── utils.py           # AWS Bedrock call + email reminder
+├── templates/
+│   ├── base.html
+│   ├── home.html          # Main dashboard with 6 big buttons
+│   ├── bp_check.html      # Enter BP + symptoms → Analyze with AI
+│   ├── bp_result.html     # Shows color + AI advice
+│   ├── history.html       # All past readings + PDF download
+│   ├── medication.html    # Add medicine + time → email reminder
+│   ├── health_tips.html   # Daily tips + YouTube videos
+│   ├── profile.html       # Name, age, emergency contact
+│   └── report.html        # PDF template
+├── static/
+│   └── (images, css if needed)
+└── manage.py

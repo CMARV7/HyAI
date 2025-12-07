@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyAI – Your Personal Hypertension Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #F1F5F9; min-height: 100vh; }
+        .playfair { font-family: 'Playfair Display', serif; }
+        .pulse-heart { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        input, textarea {
+            color: #34D399 !important;
+            font-weight: 700 !important;
+            font-size: 1.8rem !important;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #6EE7B7 !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <a href="{% url 'home' %}" class="fixed bottom-8 right-8 z-50 w-20 h-20 bg-red-600 hover:bg-red-700 rounded-full shadow-2xl flex items-center justify-center text-white text-5xl pulse-heart transition-all">
+        <i class="fas fa-heartbeat"></i>
+    </a>
+
+    {% if messages %}
+        <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 space-y-3">
+            {% for message in messages %}
+                <div class="px-8 py-4 rounded-xl bg-emerald-600 text-white font-bold shadow-lg animate-bounce">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="max-w-7xl mx-auto px-6 pt-10">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

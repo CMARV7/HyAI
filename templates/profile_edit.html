@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-4xl mx-auto py-20">
+
+    <h1 class="text-7xl playfair font-bold text-emerald-400 text-center mb-12">Edit Profile</h1>
+
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-12 shadow-2xl border border-emerald-600">
+        <form method="POST" class="space-y-10">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-2xl mb-4 text-gray-300">Your Age</label>
+                <input type="number" name="age" value="{{ profile.age|default:'' }}" placeholder="e.g. 45"
+                       class="w-full bg-deep/50 border border-emerald-600 rounded-xl px-8 py-8 text-4xl text-center focus:outline-none focus:border-emerald-400">
+            </div>
+
+            <div class="bg-red-900/30 rounded-2xl p-10 border border-red-600/50">
+                <h2 class="text-3xl font-bold text-red-400 mb-8 flex items-center gap-4">
+                    <i class="fas fa-exclamation-triangle text-4xl"></i>
+                    Emergency Contact (Next of Kin)
+                </h2>
+
+                <div class="space-y-8">
+                    <input type="text" name="emergency_name" value="{{ profile.emergency_contact_name }}" placeholder="Full Name"
+                           class="w-full bg-black/50 border border-red-600 rounded-xl px-8 py-6 text-2xl focus:outline-none focus:border-red-400">
+
+                    <input type="text" name="emergency_phone" value="{{ profile.emergency_contact_phone }}" placeholder="Phone Number"
+                           class="w-full bg-black/50 border border-red-600 rounded-xl px-8 py-6 text-2xl focus:outline-none focus:border-red-400">
+
+                    <input type="email" name="emergency_email" value="{{ profile.emergency_contact_email }}" placeholder="Email (optional)"
+                           class="w-full bg-black/50 border border-red-600 rounded-xl px-8 py-6 text-2xl focus:outline-none focus:border-red-400">
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-20 py-8 rounded-2xl text-4xl font-bold shadow-2xl transform hover:scale-105 transition-all">
+                    SAVE PROFILE
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="text-center mt-12">
+        <a href="{% url 'profile' %}" class="text-emerald-400 hover:underline text-2xl">← Back to Profile</a>
+    </div>
+</div>
+
+{% endblock %}

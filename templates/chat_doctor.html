@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-black flex flex-col">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-emerald-800/90 to-teal-900/90 backdrop-blur-xl border-b-4 border-emerald-500 shadow-2xl">
+        <div class="max-w-5xl mx-auto px-8 py-6 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
+                    <i class="fas fa-user-md text-5xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-5xl font-bold text-white">Dr. HyAI</h1>
+                    <p class="text-xl text-emerald-200">Your Personal Heart Doctor • Always Online</p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-full text-xl font-bold text-white shadow-xl">
+                <i class="fas fa-redo mr-3"></i> New Chat
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat-container" class="flex-1 max-w-5xl mx-auto w-full px-6 py-10 overflow-y-auto">
+        <div id="chat-box" class="space-y-8">
+            <!-- Welcome Message -->
+            <div class="flex gap-5 animate-fadeIn">
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex-shrink-0 flex items-center justify-center shadow-xl">
+                    <i class="fas fa-user-md text-3xl text-white"></i>
+                </div>
+                <div class="bg-gradient-to-r from-emerald-800/80 to-teal-800/80 text-white rounded-3xl px-8 py-6 max-w-2xl shadow-2xl border border-emerald-500/50">
+                    <p class="text-2xl leading-relaxed">
+                        Hello <strong>{{ user.get_full_name|default:user.username }}</strong>! ❤️<br>
+                        I'm Dr. HyAI, your personal AI doctor.<br>
+                        Feel free to tell me how you feel or ask quetions about your healh am here to help you manage your health better.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="bg-gradient-to-r from-emerald-900/90 to-teal-900/90 backdrop-blur-2xl border-t-4 border-emerald-500 shadow-2xl">
+        <div class="max-w-5xl mx-auto px-8 py-6">
+            <form id="chat-form" class="flex gap-6 items-center">
+                <input type="text" id="message-input" autocomplete="off" 
+                       placeholder="Type your message here..." 
+                       class="flex-1 bg-black/70 border-2 border-emerald-600/60 rounded-full px-10 py-8 text-2xl text-emerald-300 placeholder-emerald-700/40 focus:outline-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/30 transition-all shadow-xl">
+                <button type="submit" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 w-20 h-20 rounded-full shadow-2xl transform hover:scale-110 transition-all duration-300">
+                    <i class="fas fa-paper-plane text-4xl text-white"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- BACK TO HOME BUTTON — ADDED HERE (BEAUTIFUL & PERFECT) -->
+    <div class="bg-gradient-to-r from-emerald-900/90 to-teal-900/90 backdrop-blur-2xl border-t-4 border-emerald-500 shadow-2xl py-10">
+        <div class="text-center">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-6 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 px-24 py-12 rounded-full text-5xl font-bold text-white shadow-3xl transform hover:scale-110 transition-all duration-500">
+                <i class="fas fa-home text-5xl"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const scrollToBottom = () => chatBox.scrollTop = chatBox.scrollHeight;
+
+    document.getElementById('chat-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('message-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        chatBox.innerHTML += `
+            <div class="flex gap-5 justify-end animate-fadeIn">
+                <div class="bg-gradient-to-r from-cyan-600/90 to-blue-600/90 text-white rounded-3xl px-8 py-6 max-w-2xl shadow-2xl border border-cyan-400/50">
+                    <p class="text-2xl leading-relaxed">${message}</p>
+                </div>
+                <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex-shrink-0 shadow-xl">
+                    <i class="fas fa-user text-3xl text-white"></i>
+                </div>
+            </div>`;
+        input.value = '';
+        scrollToBottom();
+
+        chatBox.innerHTML += `
+            <div id="typing" class="flex gap-5 animate-fadeIn">
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex-shrink-0 shadow-xl">
+                    <i class="fas fa-user-md text-3xl text-white"></i>
+                </div>
+                <div class="bg-gradient-to-r from-emerald-800/80 to-teal-800/80 text-emerald-300 rounded-3xl px-8 py-6">
+                    <p class="text-2xl">Dr. HyAI is typing<span class="animate-pulse">...</span></p>
+                </div>
+            </div>`;
+        scrollToBottom();
+
+        const response = await fetch("{% url 'chat_doctor' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "message=" + encodeURIComponent(message)
+        });
+
+        const data = await response.json();
+        document.getElementById('typing').remove();
+
+        chatBox.innerHTML += `
+            <div class="flex gap-5 animate-fadeIn">
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex-shrink-0 shadow-xl">
+                    <i class="fas fa-user-md text-3xl text-white"></i>
+                </div>
+                <div class="bg-gradient-to-r from-emerald-800/80 to-teal-800/80 text-white rounded-3xl px-10 py-8 max-w-2xl text-2xl leading-relaxed shadow-2xl border border-emerald-500/50">
+                    ${data.reply.replace(/\n/g, '<br>')}
+                </div>
+            </div>`;
+        scrollToBottom();
+    };
+
+    scrollToBottom();
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+</style>
+
+{% endblock %}

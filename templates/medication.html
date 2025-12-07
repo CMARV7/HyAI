@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-black py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="text-center mb-20">
+            <h1 class="text-8xl playfair font-bold text-emerald-400 drop-shadow-2xl">Medication Reminder</h1>
+            <p class="text-3xl text-emerald-200 mt-6">Your personal medicine assistant — never forget a dose</p>
+        </div>
+
+        <!-- ACTIVE MEDICATION CARD -->
+        {% if active_med %}
+        <div class="bg-gradient-to-r from-emerald-700/40 via-teal-700/40 to-emerald-700/40 backdrop-blur-2xl rounded-3xl p-16 shadow-3xl border-4 border-emerald-400/70 mb-20">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                <div>
+                    <h2 class="text-7xl font-bold text-emerald-300 mb-4">{{ active_med.name }}</h2>
+                    <p class="text-4xl text-emerald-100">{{ active_med.dosage }}</p>
+                    <div class="mt-8 space-y-4">
+                        {% for time in active_med.dose_times.all %}
+                        <div class="inline-block bg-emerald-900/80 px-8 py-5 rounded-2xl text-3xl font-bold text-emerald-300 border border-emerald-400 shadow-lg">
+                            🕐 {{ time.time|time:"H:i" }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-9xl mb-8">💊</div>
+                    <p class="text-4xl font-bold text-emerald-300">ACTIVE</p>
+                    <form method="POST" class="mt-10">
+                        {% csrf_token %}
+                        <input type="hidden" name="cancel_med" value="{{ active_med.id }}">
+                        <button type="submit" class="bg-red-600 hover:bg-red-500 px-12 py-8 rounded-2xl text-4xl font-bold shadow-2xl">
+                            Stop Medication
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ADD NEW MEDICATION FORM -->
+        {% if not active_med %}
+        <div class="bg-gradient-to-br from-emerald-900/60 via-teal-900/60 to-emerald-900/60 backdrop-blur-xl rounded-3xl p-16 shadow-3xl border-4 border-emerald-500/70">
+            <h2 class="text-6xl font-bold text-emerald-300 text-center mb-16">Start New Medication</h2>
+            
+            <form method="POST" class="space-y-12">
+                {% csrf_token %}   <!-- THIS WAS MISSING — NOW FIXED -->
+
+                <input type="text" name="name" required placeholder="Medicine Name" class="input-premium">
+                <input type="text" name="dosage" placeholder="Dosage (e.g. 10mg)" class="input-premium">
+
+                <div>
+                    <p class="text-3xl text-emerald-300 mb-8">How many times per day?</p>
+                    <div class="grid grid-cols-3 gap-10">
+                        <label class="text-center cursor-pointer">
+                            <input type="radio" name="frequency" value="once" required class="hidden peer">
+                            <div class="bg-black/60 peer-checked:bg-emerald-700 rounded-3xl p-10 border-4 border-emerald-600/50 peer-checked:border-emerald-400 transition-all">
+                                <p class="text-6xl font-bold text-emerald-300">1x</p>
+                                <p class="text-2xl text-gray-300">Once daily</p>
+                            </div>
+                        </label>
+                        <label class="text-center cursor-pointer">
+                            <input type="radio" name="frequency" value="twice" class="hidden peer">
+                            <div class="bg-black/60 peer-checked:bg-emerald-700 rounded-3xl p-10 border-4 border-emerald-600/50 peer-checked:border-emerald-400 transition-all">
+                                <p class="text-6xl font-bold text-emerald-300">2x</p>
+                                <p class="text-2xl text-gray-300">Twice daily</p>
+                            </div>
+                        </label>
+                        <label class="text-center cursor-pointer">
+                            <input type="radio" name="frequency" value="thrice" class="hidden peer">
+                            <div class="bg-black/60 peer-checked:bg-emerald-700 rounded-3xl p-10 border-4 border-emerald-600/50 peer-checked:border-emerald-400 transition-all">
+                                <p class="text-6xl font-bold text-emerald-300">3x</p>
+                                <p class="text-2xl text-gray-300">Three times daily</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-10">
+                    <div>
+                        <label class="flex items-center gap-6 text-3xl text-emerald-300">
+                            <input type="checkbox" name="dose_morning" class="w-10 h-10">
+                            <span>Morning dose</span>
+                        </label>
+                        <input type="time" name="morning_time" class="mt-4 w-full input-premium">
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-6 text-3xl text-emerald-300">
+                            <input type="checkbox" name="dose_afternoon" class="w-10 h-10">
+                            <span>Afternoon dose</span>
+                        </label>
+                        <input type="time" name="afternoon_time" class="mt-4 w-full input-premium">
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-6 text-3xl text-emerald-300">
+                            <input type="checkbox" name="dose_evening" class="w-10 h-10">
+                            <span>Evening dose</span>
+                        </label>
+                        <input type="time" name="evening_time" class="mt-4 w-full input-premium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-12">
+                    <div>
+                        <label class="block text-2xl text-gray-300 mb-4">Start Date</label>
+                        <input type="date" name="start_date" required class="input-premium">
+                    </div>
+                    <div>
+                        <label class="block text-2xl text-gray-300 mb-4">End Date (optional)</label>
+                        <input type="date" name="end_date" class="input-premium">
+                    </div>
+                </div>
+
+                <textarea name="notes" rows="4" placeholder="Notes..." class="input-premium"></textarea>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 py-16 rounded-3xl text-7xl font-bold text-white shadow-3xl">
+                    ACTIVATE REMINDERS NOW
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-20">
+            <a href="{% url 'home' %}" class="text-emerald-400 hover:underline text-3xl">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-premium {
+        @apply w-full bg-black/70 border-3 border-emerald-600/60 rounded-3xl px-12 py-10 text-4xl text-emerald-300 placeholder-emerald-700/40 focus:outline-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/30 transition-all duration-300 shadow-inner;
+    }
+</style>
+
+{% endblock %}

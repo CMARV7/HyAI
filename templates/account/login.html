@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="bg-card/90 backdrop-blur-lg p-12 rounded-3xl shadow-2xl max-w-md w-full border border-emerald-600">
+        <div class="text-center mb-10">
+            <div class="inline-block p-6 bg-red-600 rounded-full pulse-heart mb-6">
+                <i class="fas fa-heartbeat text-white text-5xl"></i>
+            </div>
+            <h1 class="text-5xl playfair font-bold text-emerald-400">Welcome Back</h1>
+            <p class="text-gray-300 mt-2">Log in to your HyAI guardian</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="login" placeholder="Username or Email" required class="w-full bg-deep/50 border border-emerald-600 rounded-xl px-6 py-5 mb-5 text-xl">
+            <input type="password" name="password" placeholder="Password" required class="w-full bg-deep/50 border border-emerald-600 rounded-xl px-6 py-5 mb-6 text-xl">
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-6 rounded-xl text-2xl font-bold transition shadow-lg">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center mt-8 text-gray-400">
+            Don't have an account? <a href="{% url 'account_signup' %}" class="text-emerald-400 hover:underline font-bold">Register Free</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

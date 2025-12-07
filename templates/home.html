@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Top Bar -->
+<div class="bg-gradient-to-r from-emerald-900/90 via-emerald-800/95 to-emerald-900/90 backdrop-blur-xl border-b border-emerald-500/50 py-6 mb-16">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <div class="flex items-center gap-5">
+            <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center pulse-heart shadow-2xl">
+                <i class="fas fa-heartbeat text-white text-4xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl playfair font-bold text-emerald-300">HyAI</h1>
+                <p class="text-sm text-emerald-200 opacity-90">Your Personal Heart Guardian</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-10">
+            <span class="text-2xl text-emerald-100">
+                Welcome, <span class="font-bold text-emerald-300">{{ user.get_full_name|default:user.username }}</span>
+            </span>
+            <a href="{% url 'account_logout' %}" class="bg-red-600 hover:bg-red-500 px-10 py-4 rounded-full font-bold text-white text-lg transition shadow-lg">
+                Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mb-16">
+    <h2 class="text-6xl playfair font-bold text-emerald-400 mb-4">
+        Your Personal Hypertension Guardian
+    </h2>
+    <p class="text-2xl text-gray-300">Choose what you want to do today</p>
+</div>
+
+<!-- TOP 3 MAJOR FEATURES -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-20">
+    <a href="{% url 'check_bp' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-heartbeat text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Check Blood Pressure</h3>
+        <p class="text-xl opacity-90">Get real AI doctor advice instantly</p>
+    </a>
+
+    <a href="{% url 'chat_doctor' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-user-md text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Chat with AI Doctor</h3>
+        <p class="text-xl opacity-90">Talk to your personal doctor anytime</p>
+    </a>
+
+    <a href="{% url 'medication' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-pills text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Medication</h3>
+        <p class="text-xl opacity-90">Add & track your medicines</p>
+    </a>
+</div>
+
+<!-- BOTTOM 3 FEATURES -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-24">
+    <a href="{% url 'health_records' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-file-medical text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Health Records</h3>
+        <p class="text-xl opacity-90">View all your BP history</p>
+    </a>
+
+    <a href="{% url 'health_tips' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-lightbulb text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Health Tips</h3>
+        <p class="text-xl opacity-90">Daily tips & videos</p>
+    </a>
+
+    <a href="{% url 'profile' %}" class="bg-emerald-600 hover:bg-emerald-500 p-16 rounded-3xl text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <i class="fas fa-user-cog text-8xl mb-6 text-white"></i>
+        <h3 class="text-4xl font-bold mb-3">Profile</h3>
+        <p class="text-xl opacity-90">Emergency contact & personal info</p>
+    </a>
+</div>
+
+<!-- DISCLAIMER FOOTER -->
+<div class="bg-gradient-to-r from-gray-900/90 to-black/90 backdrop-blur-xl border-t-2 border-emerald-600/50 py-12">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+        <p class="text-2xl text-gray-300 mb-6">⚠️ <strong>Important Disclaimer:</strong> This is an AI-powered health tool. Always consult your real medical doctor for professional advice and treatment.</p>
+        <p class="text-xl text-emerald-300 mb-6">Designed by Marvelous Uzoma Chinwendu (PEGASUS) </p>
+        <p class="text-lg text-gray-400">© 2025 Marv-Tech Company. All rights reserved. ❤️</p>
+    </div>
+</div>
+
+{% endblock %}

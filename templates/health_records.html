@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto py-20">
+
+    <h1 class="text-7xl playfair font-bold text-emerald-400 text-center mb-8">Your Health Records</h1>
+    <p class="text-3xl text-center text-gray-300 mb-16">Last 20 blood pressure readings</p>
+
+    <div class="space-y-10">
+        {% for log in logs %}
+        <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-12 shadow-2xl border-4
+            {% if log.risk_level == 'CRISIS' %}border-red-500 animate-pulse
+            {% elif log.risk_level == 'HIGH' %}border-orange-500
+            {% elif log.risk_level == 'ELEVATED' %}border-yellow-500
+            {% else %}border-emerald-500{% endif %}">
+
+            <div class="flex flex-col md:flex-row justify-between items-start gap-8">
+                <div>
+                    <div class="text-8xl font-bold 
+                        {% if log.risk_level == 'CRISIS' %}text-red-500 animate-pulse
+                        {% elif log.risk_level == 'HIGH' %}text-orange-500
+                        {% elif log.risk_level == 'ELEVATED' %}text-yellow-500
+                        {% else %}text-emerald-400{% endif %}">
+                        {{ log.systolic }}/{{ log.diastolic }}
+                    </div>
+                    <div class="text-5xl font-bold mt-6 
+                        {% if log.risk_level == 'CRISIS' %}text-red-400
+                        {% elif log.risk_level == 'HIGH' %}text-orange-400
+                        {% elif log.risk_level == 'ELEVATED' %}text-yellow-400
+                        {% else %}text-emerald-300{% endif %}">
+                        {{ log.risk_level }}
+                    </div>
+                    <p class="text-2xl text-gray-400 mt-4">{{ log.logged_at|date:"d M Y, H:i" }}</p>
+                    {% if log.symptoms %}
+                    <p class="text-xl text-gray-300 mt-4 italic">Symptoms: {{ log.symptoms }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1 bg-black/60 rounded-2xl p-10">
+                    <p class="text-3xl font-bold text-emerald-300 mb-6">AI Doctor Advice:</p>
+                    <p class="text-2xl leading-relaxed text-gray-100">{{ log.ai_advice }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-4xl text-gray-500 py-20">No records yet. Start checking your BP!</p>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-16">
+        <a href="{% url 'home' %}" class="bg-emerald-600 hover:bg-emerald-500 px-12 py-6 rounded-2xl text-3xl font-bold">
+            ← Back to Home
+        </a>
+    </div>
+</div>
+
+{% endblock %}

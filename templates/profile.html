@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-4xl mx-auto py-20">
+
+    <h1 class="text-7xl playfair font-bold text-emerald-400 text-center mb-12">Your Profile</h1>
+
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-12 shadow-2xl border border-emerald-600">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+            <!-- Personal Info -->
+            <div>
+                <h2 class="text-4xl font-bold text-emerald-300 mb-8">Personal Details</h2>
+                <div class="space-y-6 text-xl">
+                    <div>
+                        <span class="text-gray-400">Full Name:</span>
+                        <p class="text-emerald-400 font-bold">{{ user.get_full_name|default:user.username }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Email:</span>
+                        <p class="text-emerald-400">{{ user.email|default:"Not provided" }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Age:</span>
+                        <p class="text-emerald-400">{{ profile.age|default:"Not set" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact (Next of Kin) -->
+            <div>
+                <h2 class="text-4xl font-bold text-red-400 mb-8 flex items-center gap-4">
+                    <i class="fas fa-exclamation-triangle text-4xl"></i>
+                    Emergency Contact
+                </h2>
+                <div class="space-y-6 text-xl bg-red-900/30 rounded-2xl p-8 border border-red-600/50">
+                    {% if profile.emergency_contact_name %}
+                        <div>
+                            <span class="text-gray-400">Name:</span>
+                            <p class="text-red-300 font-bold">{{ profile.emergency_contact_name }}</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Phone:</span>
+                            <p class="text-red-300">{{ profile.emergency_contact_phone|default:"Not set" }}</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Email:</span>
+                            <p class="text-red-300">{{ profile.emergency_contact_email|default:"Not set" }}</p>
+                        </div>
+                    {% else %}
+                        <p class="text-red-400 italic">No emergency contact set yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Edit Button -->
+        <div class="text-center mt-12">
+            <a href="{% url 'profile_edit' %}" class="bg-emerald-600 hover:bg-emerald-500 px-16 py-6 rounded-2xl text-3xl font-bold inline-block shadow-2xl">
+                Edit Profile & Emergency Contact
+            </a>
+        </div>
+    </div>
+
+    <div class="text-center mt-12">
+        <a href="{% url 'home' %}" class="text-emerald-400 hover:underline text-2xl">← Back to Home</a>
+    </div>
+</div>
+
+{% endblock %}

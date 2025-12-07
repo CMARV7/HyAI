@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-black py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="text-center mb-20">
+            <h1 class="text-8xl playfair font-bold text-emerald-400 drop-shadow-2xl">Daily Health Tips</h1>
+            <p class="text-4xl text-emerald-200 mt-6">Expert tips to control hypertension & live stronger</p>
+        </div>
+
+        <!-- DAILY TIP CARD -->
+        <div class="bg-gradient-to-r from-emerald-800/60 to-teal-800/60 backdrop-blur-xl rounded-3xl p-16 shadow-3xl border-4 border-emerald-500/70 mb-20">
+            <div class="flex items-center gap-12">
+                <div class="text-9xl">💡</div>
+                <div>
+                    <h2 class="text-5xl font-bold text-emerald-300 mb-6">{{ daily_tip.title }}</h2>
+                    <p class="text-3xl text-gray-100 leading-relaxed">{{ daily_tip.content }}</p>
+                    {% if daily_tip.youtube_link %}
+                    <a href="{{ daily_tip.youtube_link }}" target="_blank" class="inline-block mt-8 bg-red-600 hover:bg-red-500 px-12 py-6 rounded-2xl text-3xl font-bold shadow-2xl">
+                        🎥 Watch Video Guide
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- MORE TIPS GRID -->
+        <h2 class="text-6xl playfair font-bold text-emerald-400 text-center mb-12">More Helpful Tips</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {% for tip in tips %}
+            <div class="bg-black/60 backdrop-blur-md rounded-3xl p-10 shadow-2xl border border-emerald-600/50 hover:border-emerald-400 transition-all">
+                <div class="text-6xl mb-6 text-center">🩺</div>
+                <h3 class="text-3xl font-bold text-emerald-300 mb-4 text-center">{{ tip.title }}</h3>
+                <p class="text-xl text-gray-300 leading-relaxed">{{ tip.content|truncatewords:25 }}</p>
+                {% if tip.youtube_link %}
+                <a href="{{ tip.youtube_link }}" target="_blank" class="block mt-6 text-red-400 hover:text-red-300 text-center text-xl font-bold">
+                    Watch Video →
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-20">
+            <a href="{% url 'home' %}" class="text-emerald-400 hover:underline text-3xl">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <h1 class="text-7xl playfair font-bold text-emerald-400 mb-10">Welcome to HyAI</h1>
+        <p class="text-3xl text-gray-300 mb-16">Your Personal Hypertension Assistant</p>
+
+        <div class="space-y-8">
+            <a href="{% url 'check_bp' %}" class="block bg-emerald-600 hover:bg-emerald-500 px-20 py-12 rounded-3xl text-4xl font-bold shadow-2xl transform hover:scale-105 transition">
+                Check My Blood Pressure Now
+            </a>
+
+            <a href="{% url 'history' %}" class="block bg-deep/80 hover:bg-deep/60 px-20 py-10 rounded-3xl text-2xl font-bold border border-emerald-600">
+                View My History
+            </a>
+
+            <a href="{% url 'generate_pdf' %}" class="block bg-purple-600 hover:bg-purple-500 px-20 py-10 rounded-3xl text-2xl font-bold">
+                Download Doctor Report
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
