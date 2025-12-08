@@ -25,7 +25,6 @@ def check_bp(request):
                 messages.error(request, "Please enter realistic BP values")
                 return render(request, 'bp_check.html')
 
-            # RISK LOGIC
             if systolic >= 180 or diastolic >= 120:
                 risk = "CRISIS"
             elif systolic <= 90 or diastolic <= 60:
@@ -39,7 +38,6 @@ def check_bp(request):
             else:
                 risk = "NORMAL"
 
-            # AI DOCTOR — KEYS FROM ENVIRONMENT (SAFE)
             try:
                 client = boto3.client(
                     'bedrock-runtime',
@@ -47,20 +45,13 @@ def check_bp(request):
                     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
                 )
-                prompt = f"""You are Dr. HyAI — a highly professional, board-certified cardiologist.
-Patient BP: {systolic}/{diastolic} mmHg
-Symptoms: {symptoms or 'None reported'}
-Risk level: {risk.replace('_', ' ').title()}
-
-note your response must be short and very clear it should not exceed five sentences.
-Give a short, clear, structured medical report in 3 parts:
-1. Current reading and classification
-2. Immediate action (if crisis/danger low: GO TO HOSPITAL IMMEDIATELY)
-3. Lifestyle recommendations (3-4 bullet points)
-
-Use clean, professional English. Be caring, friendly but authoritative.
-Reply now:"""
-
+                prompt = f"""You are Dr. HyAI — a professional cardiologist.
+BP: {systolic}/{diastolic}, Risk: {risk.replace('_', ' ')}
+Give a short, clear, structured report in 3 parts:
+1. Reading & classification
+2. Immediate action
+3. Lifestyle tips (3-4 bullets)
+Use professional English."""
                 response = client.invoke_model(
                     modelId="anthropic.claude-3-haiku-20240307-v1:0",
                     body=json.dumps({
@@ -70,10 +61,9 @@ Reply now:"""
                         "messages": [{"role": "user", "content": prompt}]
                     }).encode()
                 )
-                result_json = json.loads(response['body'].read())
-                advice = result_json['content'][0]['text']
-            except Exception as e:
-                advice = "Your reading has been saved. Please consult a doctor for accurate advice."
+                advice = json.loads(response['body'].read())['content'][0]['text']
+            except:
+                advice = "Your reading has been saved."
 
             BloodPressureLog.objects.create(
                 user=request.user,
@@ -84,13 +74,7 @@ Reply now:"""
                 ai_advice=advice
             )
 
-            result = {
-                'systolic': systolic,
-                'diastolic': diastolic,
-                'symptoms': symptoms,
-                'risk': risk,
-                'advice': advice
-            }
+            result = {'systolic': systolic, 'diastolic': diastolic, 'symptoms': symptoms, 'risk': risk, 'advice': advice}
 
         except ValueError:
             messages.error(request, "Please enter valid numbers")
@@ -99,14 +83,69 @@ Reply now:"""
 
     return render(request, 'bp_check.html', {'result': result})
 
-# — ALL OTHER VIEWS SAME AS BEFORE (no keys) —
-# (health_records, profile, medication, health_tips, chat_doctor — unchanged except chat_doctor below)
+@login_required
+def health_records(request):
+    logs = request.user.bp_logs.all().order_by('-logged_at')
+    return render(request, 'health_records.html', {'logs': logs})
+
+@login_required
+def profile_view(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    return render(request, 'profile.html', {'profile': profile})
+
+@login_required
+def profile_edit(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == "POST":
+        profile.age = request.POST.get('age') or None
+        profile.emergency_contact_name = request.POST.get('emergency_name', '')
+        profile.emergency_contact_phone = request.POST.get('emergency_phone', '')
+        profile.emergency_contact_email = request.POST.get('emergency_email', '')
+        profile.save()
+        messages.success(request, "Profile saved!")
+        return redirect('profile')
+    return render(request, 'profile_edit.html', {'profile': profile})
+
+@login_required
+def medication(request):
+    active_med = request.user.medications.filter(active=True).first()
+    if request.method == "POST":
+        if 'cancel_med' in request.POST:
+            med = Medication.objects.get(id=request.POST['cancel_med'], user=request.user)
+            med.active = False
+            med.save()
+            return redirect('medication')
+
+        name = request.POST['name']
+        med = Medication.objects.create(
+            user=request.user,
+            name=name,
+            dosage=request.POST.get('dosage', ''),
+            frequency=request.POST['frequency'],
+            start_date=request.POST['start_date'],
+            end_date=request.POST.get('end_date') or None,
+            notes=request.POST.get('notes', '')
+        )
+        # ... time creation code ...
+        request.user.medications.exclude(id=med.id).update(active=False)
+        messages.success(request, f"{name} activated!")
+        return redirect('medication')
+
+    return render(request, 'medication.html', {
+        'active_med': active_med,
+        'frequency_choices': Medication.FREQUENCY_CHOICES
+    })
+
+@login_required
+def health_tips(request):
+    tips = HealthTip.objects.all()
+    daily_tip = tips.order_by('?').first()
+    return render(request, 'health_tips.html', {'tips': tips, 'daily_tip': daily_tip})
 
 @login_required
 def chat_doctor(request):
     if request.method == "POST":
         user_message = request.POST.get('message', '').strip()
-        
         try:
             client = boto3.client(
                 'bedrock-runtime',
@@ -114,16 +153,7 @@ def chat_doctor(request):
                 aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                 aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
             )
-            
-            prompt = f"""You are Dr. HyAI, a friendly, confident, caring professional doctor.
-Always reply in short, warm, engaging sentences.
-Use simple English. Add light Naija vibe only if patient uses pidgin.
-Be direct, caring, and accurate.
-You can suggest general medication types if needed.
-Always recommend seeing a real doctor for serious cases.
-Patient says: "{user_message}"
-Reply now:"""
-
+            prompt = f"Patient says: {user_message}\nReply as Dr. HyAI — professional, caring doctor."
             response = client.invoke_model(
                 modelId="anthropic.claude-3-haiku-20240307-v1:0",
                 body=json.dumps({
@@ -133,13 +163,8 @@ Reply now:"""
                     "messages": [{"role": "user", "content": prompt}]
                 }).encode()
             )
-            
-            result = json.loads(response['body'].read())
-            reply = result['content'][0]['text'].strip()
-            
+            reply = json.loads(response['body'].read())['content'][0]['text']
         except:
-            reply = "Doctor Hyai is here for you, talk to me am here to help"
-
+            reply = "I'm here for you. How can I help?"
         return JsonResponse({'reply': reply})
-    
     return render(request, 'chat_doctor.html')
