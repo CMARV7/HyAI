@@ -97,16 +97,18 @@ DEFAULT_FROM_EMAIL = 'Dr. HyAI <chinwendumarvelous7@gmail.com>'
 # AWS keys will be added in Railway as environment variables (secure)
 
 
-# Railway database (auto-configured)
+# Railway production settings
 if 'DATABASE_URL' in os.environ:
-    import dj_database_url
     DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
 
-# Static files for production
+# Static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Celery config for Railway
+# Allowed hosts for Railway
+ALLOWED_HOSTS = ['*']
+
+# Celery for Railway
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
